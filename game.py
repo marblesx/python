@@ -1,6 +1,7 @@
 # Import the pygame module
 import pygame
 import random
+import os
 
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
@@ -21,12 +22,16 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 score = 0 
 
+current_path = os.path.dirname(__file__) # Where your .py file is located
+resource_path = os.path.join(current_path, 'content') # The resource folder path
+
 # Define a player object by extending pygame.sprite.Sprite
 class Player(pygame.sprite.Sprite):
 # The surface drawn on the screen is now an attribute of 'player'
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.transform.scale(pygame.image.load("content/human.png").convert(), (32,32))
+        global resource_path
+        self.surf = pygame.transform.scale(pygame.image.load(os.path.join(resource_path, "human.png")).convert(), (32,32))
         self.surf.set_colorkey((255,255,255), RLEACCEL)
         self.rect = self.surf.get_rect()
         
@@ -57,7 +62,9 @@ class Player(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super(Enemy, self).__init__()
-        self.surf = pygame.transform.scale(pygame.image.load("content/zombie.png").convert(), (32,32))
+        global resource_path
+
+        self.surf = pygame.transform.scale(pygame.image.load(os.path.join(resource_path, "zombie.png")).convert(), (32,32))
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(
             center=(
