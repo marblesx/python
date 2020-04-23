@@ -5,6 +5,7 @@ import random
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
 from pygame.locals import (
+    
     RLEACCEL,
     K_UP,
     K_DOWN,
@@ -18,6 +19,7 @@ from pygame.locals import (
 # Define constants for the screen width and height
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
+score = 0 
 
 # Define a player object by extending pygame.sprite.Sprite
 class Player(pygame.sprite.Sprite):
@@ -70,10 +72,16 @@ class Enemy(pygame.sprite.Sprite):
     def update(self):
         self.rect.move_ip(-self.speed, 0)
         if self.rect.right < 0:
+            global score
+            score += 1
             self.kill()
+        
+
 
 # Initialize pygame
 pygame.init()
+pygame.display.set_caption("WickiTest Game")
+myfont = pygame.font.SysFont("monospace", 16)
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
@@ -122,13 +130,16 @@ while running:
     pressed_keys = pygame.key.get_pressed()
 
     player.update(pressed_keys)
-
+    
+    
      # Update enemy position
     enemies.update()
-
+    
     # Fill the screen with black
     screen.fill((0, 0, 0))
-
+    scoretext = myfont.render("Score {0}".format(score), True, (255,255,255))
+    screen.blit(scoretext, (600, 10))
+    
     # Draw all sprites
     for entity in all_sprites:
         screen.blit(entity.surf, entity.rect)
