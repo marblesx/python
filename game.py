@@ -2,6 +2,7 @@
 import pygame
 import random
 import os
+import math
 
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
@@ -13,6 +14,10 @@ from pygame.locals import (
     K_RIGHT,
     K_ESCAPE,
     KEYDOWN,
+    K_a,
+    K_s,
+    K_w,
+    K_d,
     QUIT,
 )
 
@@ -30,20 +35,20 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
         global resource_path
-        self.surf = pygame.transform.scale(pygame.image.load(os.path.join(resource_path, "human.png")).convert(), (32,32))
+        self.surf = pygame.transform.scale(pygame.image.load(os.path.join(resource_path, "human.png")).convert(), (64,64))
         self.surf.set_colorkey((255,255,255), RLEACCEL)
         self.rect = self.surf.get_rect()
         
 
     # Move the sprite based on user keypresses
     def update(self, pressed_keys):
-        if pressed_keys[K_UP]:
+        if pressed_keys[K_UP] or pressed_keys[K_w]:
             self.rect.move_ip(0, -5)
-        if pressed_keys[K_DOWN]:
+        if pressed_keys[K_DOWN] or pressed_keys[K_s]:
             self.rect.move_ip(0, 5)
-        if pressed_keys[K_LEFT]:
+        if pressed_keys[K_LEFT] or pressed_keys[K_a]:
             self.rect.move_ip(-5, 0)
-        if pressed_keys[K_RIGHT]:
+        if pressed_keys[K_RIGHT] or pressed_keys[K_d]:
             self.rect.move_ip(5, 0)
         # Keep player on the screen
         if self.rect.left < 0:
@@ -62,8 +67,8 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super(Enemy, self).__init__()
         global resource_path
-
-        self.surf = pygame.transform.scale(pygame.image.load(os.path.join(resource_path, "zombie.png")).convert(), (32,32))
+        
+        self.surf = pygame.transform.scale(pygame.image.load(os.path.join(resource_path, "Evil_Sprite.png")).convert(), (32,32))
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(
             center=(
@@ -71,14 +76,18 @@ class Enemy(pygame.sprite.Sprite):
                 random.randint(0, SCREEN_HEIGHT),
             )
         )
-        self.speed = random.randint(5, 30)
+        self.speed = random.randint(5, 15)
 
     # Move the sprite based on speed
     # Remove the sprite when it passes the left edge of the screen
-    def update(self):
+    def update(self, player):
         self.rect.move_ip(-self.speed, 0)
         if self.rect.right < 0:
+            global SCREEN_WIDTH
             global score
+            killscore =  math.floor((self.speed / 100 * 10)) + 1
+            if(player.rect.left > (SCREEN_WIDTH / 2)):
+                killscore = math.floor(killscore * .5) + killscore
             score += 1
             self.kill()
         
@@ -139,7 +148,7 @@ while running:
     
     
      # Update enemy position
-    enemies.update()
+    enemies.update(player)
     
     # Fill the screen with black
     screen.fill((0, 0, 0))
